@@ -18,6 +18,37 @@ export interface StreamState {
   language: string;
 }
 
+export interface ContentInput {
+  text: string;
+  language: string;
+}
+
+export function generateContent(mode: StreamMode, minTokens: number): ContentInput {
+  if (mode === 'code') {
+    const shuffled = [...codeSnippets].sort(() => Math.random() - 0.5);
+    let accumulated = 0;
+    const picks: string[] = [];
+    let lang = 'text';
+    for (const item of shuffled) {
+      picks.push(item.code);
+      lang = item.language;
+      accumulated += tokenize(item.code).ids.length;
+      if (accumulated >= minTokens) break;
+    }
+    return { text: picks.join('\n\n'), language: lang };
+  }
+
+  const shuffled = [...textParagraphs].sort(() => Math.random() - 0.5);
+  let accumulated = 0;
+  const picks: string[] = [];
+  for (const item of shuffled) {
+    picks.push(item);
+    accumulated += tokenize(item).ids.length;
+    if (accumulated >= minTokens) break;
+  }
+  return { text: picks.join('\n\n'), language: 'text' };
+}
+
 export function useStream() {
   const [state, setState] = useState<StreamState>({
     status: 'idle',
@@ -87,38 +118,29 @@ export function useStream() {
     return () => clearInterval(interval);
   }, [state.status]);
 
-  const start = useCallback((tps: number, mode: StreamMode, jitter: boolean) => {
+  const start = useCallback((
+    tps: number,
+    mode: StreamMode,
+    jitter: boolean,
+    presetContent?: ContentInput,
+  ) => {
     stopTimer();
     tpsRef.current = tps;
     jitterRef.current = jitter;
 
-    const minTokens = Math.max(tps * 5, 200);
-    const textPool = textParagraphs;
-    const codePool = codeSnippets;
-    let content = '';
-    let lang = 'text';
+    let content: string;
+    let lang: string;
 
-    let accumulatedTokens = 0;
-    const picks: string[] = [];
-
-    if (mode === 'code') {
-      const shuffled = [...codePool].sort(() => Math.random() - 0.5);
-      for (const item of shuffled) {
-        picks.push(item.code);
-        lang = item.language;
-        accumulatedTokens += tokenize(item.code).ids.length;
-        if (accumulatedTokens >= minTokens) break;
-      }
+    if (presetContent) {
+      content = presetContent.text;
+      lang = presetContent.language;
     } else {
-      const shuffled = [...textPool].sort(() => Math.random() - 0.5);
-      for (const item of shuffled) {
-        picks.push(item);
-        accumulatedTokens += tokenize(item).ids.length;
-        if (accumulatedTokens >= minTokens) break;
-      }
+      const minTokens = Math.max(tps * 5, 200);
+      const gen = generateContent(mode, minTokens);
+      content = gen.text;
+      lang = gen.language;
     }
 
-    content = picks.join('\n\n');
     const tok = tokenize(content);
     tokenizedRef.current = tok;
     indexRef.current = 0;

@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { useStream, type StreamMode } from '../hooks/useStream';
+import { useState, useEffect, forwardRef, useImperativeHandle } from 'react';
+import { useStream, type StreamMode, type StreamStatus, type ContentInput } from '../hooks/useStream';
 import { subscribe } from '../utils/streamBus';
 import { TpsInput } from './TpsInput';
 import { ModeSelector } from './ModeSelector';
@@ -7,17 +7,45 @@ import { StreamControls } from './StreamControls';
 import { StreamOutput } from './StreamOutput';
 import { StatsBar } from './StatsBar';
 
-interface Props {
-  label?: string;
+export interface StreamPanelHandle {
+  start: (tps: number, mode: StreamMode, jitter: boolean, presetContent?: ContentInput) => void;
+  pause: () => void;
+  resume: () => void;
+  stop: () => void;
+  getStatus: () => StreamStatus;
+  getTps: () => number;
 }
 
-export function StreamPanel({ label }: Props) {
+interface Props {
+  label?: string;
+  showControls?: boolean;
+  onStatusChange?: (status: StreamStatus) => void;
+}
+
+export const StreamPanel = forwardRef<StreamPanelHandle, Props>(({
+  label,
+  showControls = true,
+  onStatusChange,
+}, ref) => {
   const [tps, setTps] = useState(50);
   const [mode, setMode] = useState<StreamMode>('text');
   const [jitter, setJitter] = useState(false);
   const { state, start, pause, resume, stop } = useStream();
 
   const isBusy = state.status === 'streaming' || state.status === 'paused';
+
+  useImperativeHandle(ref, () => ({
+    start: (t, m, j, pc) => start(t, m, j, pc),
+    pause,
+    resume,
+    stop,
+    getStatus: () => state.status,
+    getTps: () => tps,
+  }), [start, pause, resume, stop, state.status, tps]);
+
+  useEffect(() => {
+    onStatusChange?.(state.status);
+  }, [state.status, onStatusChange]);
 
   useEffect(() => {
     const unsub = subscribe(action => {
@@ -32,17 +60,24 @@ export function StreamPanel({ label }: Props) {
   return (
     <div className="stream-panel">
       {label && <h3 className="panel-label">{label}</h3>}
-      <div className="panel-controls">
-        <TpsInput value={tps} onChange={setTps} disabled={isBusy} />
-        <ModeSelector mode={mode} onChange={setMode} disabled={isBusy} />
-        <StreamControls
-          status={state.status}
-          onStart={() => start(tps, mode, jitter)}
-          onPause={pause}
-          onResume={resume}
-          onStop={stop}
-        />
-      </div>
+      {showControls && (
+        <div className="panel-controls">
+          <TpsInput value={tps} onChange={setTps} disabled={isBusy} />
+          <ModeSelector mode={mode} onChange={setMode} disabled={isBusy} />
+          <StreamControls
+            status={state.status}
+            onStart={() => start(tps, mode, jitter)}
+            onPause={pause}
+            onResume={resume}
+            onStop={stop}
+          />
+        </div>
+      )}
+      {!showControls && (
+        <div className="panel-controls">
+          <TpsInput value={tps} onChange={setTps} disabled={isBusy} />
+        </div>
+      )}
       <StreamOutput
         text={state.accumulatedText}
         status={state.status}
@@ -57,4 +92,4 @@ export function StreamPanel({ label }: Props) {
       />
     </div>
   );
-}
+});
