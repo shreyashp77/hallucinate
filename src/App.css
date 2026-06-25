@@ -552,6 +552,51 @@
   50% { transform: rotate(90deg); }
 }
 
+/* ── Mobile landscape fullscreen streaming ── */
+
+@media (orientation: landscape) and (max-width: 820px) {
+  .app.streaming-active {
+    max-width: none;
+    padding: 0;
+  }
+
+  .app.streaming-active .header,
+  .app.streaming-active > .panel-controls,
+  .app.streaming-active .footer,
+  .app.streaming-active .stream-panel > .panel-controls,
+  .app.streaming-active .stream-panel > .panel-label,
+  .app.streaming-active .stream-panel > .stats-bar,
+  .app.streaming-active .rotate-prompt {
+    display: none;
+  }
+
+  .app.streaming-active .main {
+    padding: 0;
+    gap: 0;
+  }
+
+  .app.streaming-active .main.split {
+    flex-direction: row;
+  }
+
+  .app.streaming-active .stream-panel {
+    gap: 0;
+  }
+
+  .app.streaming-active .term-window {
+    border: none;
+    border-right: 1px solid var(--border);
+  }
+
+  .app.streaming-active .stream-panel:last-child .term-window {
+    border-right: none;
+  }
+
+  .app.streaming-active .term-titlebar {
+    padding: 4px 8px;
+  }
+}
+
 @media (max-width: 768px) {
   .header {
     flex-direction: column;

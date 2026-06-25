@@ -84,7 +84,7 @@ function AppInner() {
   const splitStatus = combineStatus(p1Status, p2Status);
 
   return (
-    <div className="app">
+    <div className={'app' + (compare && splitBusy ? ' streaming-active' : '')}>
       <Header
         compare={compare}
         onCompareChange={setCompare}
