@@ -13,16 +13,16 @@ export function Header({ compare, onCompareChange, onOpenShortcuts }: Props) {
   return (
     <header className="header">
       <div className="header-left">
-        <h1>TPS Visualizer</h1>
-        <span className="subtitle">See what tokens per second actually looks like</span>
+        <h1>tps-viz</h1>
+        <span className="subtitle">token streaming simulator</span>
       </div>
       <div className="header-right">
         <CompareToggle enabled={compare} onChange={onCompareChange} />
         <button className="theme-btn" onClick={toggle} title="Toggle theme (T)">
-          {theme === 'light' ? '🌙' : '☀️'}
+          [{theme === 'light' ? 'light' : 'dark'}]
         </button>
         <button className="shortcuts-btn" onClick={onOpenShortcuts} title="Keyboard shortcuts (?)">
-          ?
+          [ ? ]
         </button>
       </div>
     </header>

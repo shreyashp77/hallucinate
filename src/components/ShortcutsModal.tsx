@@ -20,7 +20,7 @@ export function ShortcutsModal({ open, onClose }: Props) {
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal-content" onClick={e => e.stopPropagation()}>
-        <h2>Keyboard Shortcuts</h2>
+        <h2>// keyboard shortcuts</h2>
         <table className="shortcuts-table">
           <tbody>
             <tr><td><kbd>Space</kbd></td><td>Pause / Resume streaming</td></tr>

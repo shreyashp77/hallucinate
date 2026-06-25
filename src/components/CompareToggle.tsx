@@ -9,7 +9,7 @@ export function CompareToggle({ enabled, onChange }: Props) {
       className={`compare-toggle ${enabled ? 'active' : ''}`}
       onClick={() => onChange(!enabled)}
     >
-      {enabled ? 'Single View' : 'Compare Mode'}
+      [{enabled ? 'single' : 'split'}]
     </button>
   );
 }
