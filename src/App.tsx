@@ -119,6 +119,15 @@ function AppInner() {
             mode={splitMode}
           />
         )}
+        {compare && (
+          <div className="rotate-prompt">
+            <span className="rotate-icon">↻</span>
+            <p>Rotate your device to landscape<br/>for split view comparison</p>
+            <button className="ctrl-btn" onClick={() => setCompare(false)}>
+              Exit Split View
+            </button>
+          </div>
+        )}
       </main>
       <footer className="footer">
         <span>Keyboard: <kbd>Space</kbd> pause · <kbd>C</kbd> compare · <kbd>T</kbd> theme · <kbd>?</kbd> shortcuts</span>
