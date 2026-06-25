@@ -30,6 +30,7 @@ function AppInner() {
   const panel2Ref = useRef<StreamPanelHandle>(null);
 
   const splitBusy = p1Status === 'streaming' || p1Status === 'paused' || p2Status === 'streaming' || p2Status === 'paused';
+  const splitDone = p1Status === 'done' && p2Status === 'done';
 
   const handler = useCallback((e: KeyboardEvent) => {
     if (e.key === 'c' || e.key === 'C') setCompare(v => !v);
@@ -84,7 +85,7 @@ function AppInner() {
   const splitStatus = combineStatus(p1Status, p2Status);
 
   return (
-    <div className={'app' + (compare && splitBusy ? ' streaming-active' : '')}>
+    <div className={'app' + (compare && (splitBusy || splitDone) ? ' streaming-active' : '')}>
       <Header
         compare={compare}
         onCompareChange={setCompare}
