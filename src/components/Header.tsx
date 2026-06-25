@@ -13,8 +13,8 @@ export function Header({ compare, onCompareChange, onOpenShortcuts }: Props) {
   return (
     <header className="header">
       <div className="header-left">
-        <h1>tps-viz</h1>
-        <span className="subtitle">token streaming simulator</span>
+        <h1>hallucinate</h1>
+        <span className="subtitle">tokens per second visualizer</span>
       </div>
       <div className="header-right">
         <CompareToggle enabled={compare} onChange={onCompareChange} />
