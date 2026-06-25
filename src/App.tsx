@@ -108,6 +108,7 @@ function AppInner() {
           label={compare ? 'Left' : undefined}
           showControls={!compare}
           onStatusChange={setP1Status}
+          mode={compare ? splitMode : undefined}
         />
         {compare && (
           <StreamPanel
@@ -115,6 +116,7 @@ function AppInner() {
             label="Right"
             showControls={false}
             onStatusChange={setP2Status}
+            mode={splitMode}
           />
         )}
       </main>

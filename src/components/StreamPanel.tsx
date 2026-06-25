@@ -20,15 +20,18 @@ interface Props {
   label?: string;
   showControls?: boolean;
   onStatusChange?: (status: StreamStatus) => void;
+  mode?: StreamMode;
 }
 
 export const StreamPanel = forwardRef<StreamPanelHandle, Props>(({
   label,
   showControls = true,
   onStatusChange,
+  mode: externalMode,
 }, ref) => {
   const [tps, setTps] = useState(50);
-  const [mode, setMode] = useState<StreamMode>('text');
+  const [internalMode, setInternalMode] = useState<StreamMode>('text');
+  const mode = externalMode ?? internalMode;
   const [jitter, setJitter] = useState(false);
   const { state, start, pause, resume, stop } = useStream();
 
@@ -63,7 +66,7 @@ export const StreamPanel = forwardRef<StreamPanelHandle, Props>(({
       {showControls && (
         <div className="panel-controls">
           <TpsInput value={tps} onChange={setTps} disabled={isBusy} />
-          <ModeSelector mode={mode} onChange={setMode} disabled={isBusy} />
+          <ModeSelector mode={mode} onChange={setInternalMode} disabled={isBusy} />
           <StreamControls
             status={state.status}
             onStart={() => start(tps, mode, jitter)}
